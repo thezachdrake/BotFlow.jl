@@ -1,7 +1,10 @@
-name = "Alfred"
+name = "BotFlow"
 uuid = "733dab75-454b-45c2-9b90-b0585224cdcc"
 authors = ["Zach Drake"]
 version = "1.0.0-DEV"
+
+[deps]
+DotEnv = "4dc1fcf4-5e3b-5448-94ab-0c38ec0385c1"
 
 [compat]
 julia = "1.6.7"
