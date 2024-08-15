@@ -99,5 +99,8 @@ function invoke(
         output_tokens = response["usage"]["output_tokens"],
     )
 
+    @info "Recieved message from Anthropic: $(anthropicOutput.id)"
+    @info "Message used $(anthropicOutput.input_tokens) input tokens and $(anthropicOutput.output_tokens) output tokens"
+
     return (aiMessage, anthropicOutput)
 end
