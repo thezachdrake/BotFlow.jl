@@ -12,27 +12,39 @@ include("message.jl")
     args::Vector{String}
 end
 
-@kwdef mutable struct AnthropicChat <: AbstractChatModel
+"""
+    AnthropicChat <: AbstractChatModel
+
+Implimentation of the `AbstractChatModel` for the Anthropic API.
+See https://docs.anthropic.com/en/api/messages for more information.
+"""
+@kwdef struct AnthropicChat <: AbstractChatModel
     api_key::String
     model::String
     max_tokens::Int = 1024
     temperature::Float64 = 0.5
-    stop_sequences::Vector{String} = []
-    tools::Vector{AnthropicTool} = []
-    top_k::Int = -1
-    top_p::Float64 = -1.0
+    # stop_sequences::Vector{String} = []
+    # tools::Vector{AnthropicTool} = []
+    # top_k::Int = missing
+    # top_p::Float64 = missing
 end
 
-@kwdef mutable struct AnthropicOutput <: AbstractModelOutput
+@kwdef struct AnthropicOutput <: AbstractModelOutput
     id::String
-    stop_reason::String = nothing
-    stop_sequence::String = nothing
-    input_tokens::Int = nothing
-    output_tokens::Int = nothing
+    stop_reason::String
+    stop_sequence::Union{Nothing, String}
+    input_tokens::Int
+    output_tokens::Int
 end
 
-function anthropicRole(role::String)::String
-    return role == "human" ? "user" : "assistant"
+function anthropicRole(message::AbstractMessage)::String
+    if isa(message, HumanMessage)
+        return "user"
+    elseif isa(message, AIMessage)
+        return "assistant"
+    elseif isa(message, ProcessMessage)
+        return "user"
+    end
 end
 
 function invoke(
@@ -40,12 +52,12 @@ function invoke(
     messages::Vector{AbstractMessage},
     args...;
     kwargs...,
-)::(AIMessage, AnthropicOutput)
+)
     @debug "Invoking AnthropicChat $(model.model)"
-    const url::String = "https://api.anthropic.com/v1/message"
+    url::String = "https://api.anthropic.com/v1/messages"
     @debug "Calling $url"
 
-    const headers::Dict{String, String} = Dict(
+    headers::Dict{String, String} = Dict(
         "Content-Type" => "application/json",
         "x-api-key" => model.api_key,
         "anthropic-version" => "2023-06-01",
@@ -53,34 +65,34 @@ function invoke(
 
     body::Dict{String, Any} = Dict(
         "model" => model.model,
-        "max_tokens_to_sample" => model.max_tokens,
+        "max_tokens" => model.max_tokens,
         "messages" => [
-            Dict("role" => anthropicRole(m.role), "content" => m.message) for m in messages
+            Dict("role" => anthropicRole(m), "content" => m.message) for m in messages
         ],
     )
 
-    if model.temperature != -1.0
-        body["temperature"] = model.temperature
-        @debug "Setting temperature to $(model.temperature)"
-    end
-    if model.top_k != -1
-        body["top_k"] = model.top_k
-        @debug "Setting top_k to $(model.top_k)"
-    end
-    if model.top_p != -1.0
-        body["top_p"] = model.top_p
-        @debug "Setting top_p to $(model.top_p)"
-    end
-    if length(model.stop_sequences) > 0
-        body["stop_sequences"] = model.stop_sequences
-        @debug "Setting stop_sequences to $(model.stop_sequences)"
-    end
-    if length(model.tools) > 0
-        body["tools"] = model.tools
-        @debug "Setting tools to $(model.tools)"
-    end
+    # if !ismissing(model.temperature)
+    #     body["temperature"] = model.temperature
+    #     @debug "Setting temperature to $(model.temperature)"
+    # end
+    # if !ismissing(model.top_k)
+    #     body["top_k"] = model.top_k
+    #     @debug "Setting top_k to $(model.top_k)"
+    # end
+    # if !ismissing(model.top_p)
+    #     body["top_p"] = model.top_p
+    #     @debug "Setting top_p to $(model.top_p)"
+    # end
+    # if length(model.stop_sequences) > 0 || !ismissing(model.stop_sequences)
+    #     body["stop_sequences"] = model.stop_sequences
+    #     @debug "Setting stop_sequences to $(model.stop_sequences)"
+    # end
+    # if length(model.tools) > 0 || !ismissing(model.tools)
+    #     body["tools"] = model.tools
+    #     @debug "Setting tools to $(model.tools)"
+    # end
 
-    result::HTTP.Response = HTTP.request(HTTP.post, url, headers, JSON3.write(body))
+    result::HTTP.Response = HTTP.request("POST", url, headers, JSON3.write(body))
 
     if result.status != 200
         @error "Failed to invoke AnthropicChat $(model.model)"
@@ -88,13 +100,14 @@ function invoke(
     end
 
     @debug "Got response from AnthropicChat $(model.model)"
-    const response::Dict{String, Any} = JSON3.read(result.body)
+    response = JSON3.read(result.body)
+    @debug response
 
-    aiMessage = AIMessage(message = response["content"]["text"])
+    aiMessage = AIMessage(message = response["content"][1]["text"])
     anthropicOutput = AnthropicOutput(
         id = response["id"],
-        stop_reason = response["stop_reason"],
-        stop_sequence = response["stop_sequence"],
+        stop_reason = get(response, "stop_reason", missing),
+        stop_sequence = get(response, "stop_sequence", missing),
         input_tokens = response["usage"]["input_tokens"],
         output_tokens = response["usage"]["output_tokens"],
     )
@@ -102,5 +115,5 @@ function invoke(
     @info "Recieved message from Anthropic: $(anthropicOutput.id)"
     @info "Message used $(anthropicOutput.input_tokens) input tokens and $(anthropicOutput.output_tokens) output tokens"
 
-    return (aiMessage, anthropicOutput)
+    return aiMessage, anthropicOutput
 end
