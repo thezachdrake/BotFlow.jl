@@ -42,13 +42,13 @@ no longer offer this kind of interface. See 'invoke' for calling method with a
 abstract type AbstractTextModel <: AbstractLangModel end
 
 """
-    invoke(AbstractTextModel, AbstractPrompt)::(Tuple{AbstractMessage, AbstractModelOutput})
-    invoke(AbstractChatModel, Vector{AbstractMessage})::(Tuple{AbstractMessage, AbstractModelOutput})
+    use(AbstractTextModel, AbstractPrompt)::(Tuple{AbstractMessage, AbstractModelOutput})
+    use(AbstractChatModel, Vector{AbstractMessage})::(Tuple{AbstractMessage, AbstractModelOutput})
 
 Takes a `AbstractLangModel` and either a `AbstractPrompt` or `Vector{AbstractMessage}` 
 and returns a `Tuple{AbstractMessage, AbstractModelOutput}`.
 Implimentation for concrete model types will make HTTP calls
 to the model's API. 
 """
-function invoke end
+function use end
 
