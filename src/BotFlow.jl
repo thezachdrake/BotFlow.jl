@@ -2,7 +2,7 @@ module BotFlow
 
 include("message.jl")
 include("llm.jl")
-include("tools.jl")
+include("tool.jl")
 
 include("anthropic.jl")
 
