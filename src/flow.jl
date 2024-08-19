@@ -37,7 +37,7 @@ Base.show(io::IO, s::SequentialFlow) = print(io, join(s.steps, " → "))
 
 function execute(s::SequentialFlow, ctx::AbstractContext)::AbstractContext
     for step in s.steps
-        ctx = apply(step, ctx)
+        ctx = execute(step, ctx)
     end
     
     return ctx

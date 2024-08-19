@@ -47,11 +47,9 @@ function anthropicRole(message::AbstractMessage)::String
     end
 end
 
-function invoke(
+function execute(
     model::AnthropicChat,
-    messages::Vector{AbstractMessage},
-    args...;
-    kwargs...,
+    ctx::AbstractContext,
 )
     @debug "Invoking AnthropicChat $(model.model)"
     url::String = "https://api.anthropic.com/v1/messages"
@@ -70,27 +68,6 @@ function invoke(
             Dict("role" => anthropicRole(m), "content" => m.message) for m in messages
         ],
     )
-
-    # if !ismissing(model.temperature)
-    #     body["temperature"] = model.temperature
-    #     @debug "Setting temperature to $(model.temperature)"
-    # end
-    # if !ismissing(model.top_k)
-    #     body["top_k"] = model.top_k
-    #     @debug "Setting top_k to $(model.top_k)"
-    # end
-    # if !ismissing(model.top_p)
-    #     body["top_p"] = model.top_p
-    #     @debug "Setting top_p to $(model.top_p)"
-    # end
-    # if length(model.stop_sequences) > 0 || !ismissing(model.stop_sequences)
-    #     body["stop_sequences"] = model.stop_sequences
-    #     @debug "Setting stop_sequences to $(model.stop_sequences)"
-    # end
-    # if length(model.tools) > 0 || !ismissing(model.tools)
-    #     body["tools"] = model.tools
-    #     @debug "Setting tools to $(model.tools)"
-    # end
 
     result::HTTP.Response = HTTP.request("POST", url, headers, JSON3.write(body))
 

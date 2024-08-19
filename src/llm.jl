@@ -24,8 +24,7 @@ abstract type AbstractModelOutput end
 
 Subtype of `AbstractLangModel` that indicates the model is intended to be used with a 
 "chat" interface. These models typically take an array of messages and a system prompt 
-as inputs and return a message. Most newer models only offer this kind of interface. See 'invoke'
-for calling method with a `Vector{AbstractMessage}`.
+as inputs and return a message. Most newer models only offer this kind of interface. 
 """
 abstract type AbstractChatModel <: AbstractLangModel end
 
@@ -42,13 +41,13 @@ no longer offer this kind of interface. See 'invoke' for calling method with a
 abstract type AbstractTextModel <: AbstractLangModel end
 
 """
-    use(AbstractTextModel, AbstractPrompt)::(Tuple{AbstractMessage, AbstractModelOutput})
-    use(AbstractChatModel, Vector{AbstractMessage})::(Tuple{AbstractMessage, AbstractModelOutput})
+    execute(AbstractTextModel, AbstractContext)::AbstractContext
+    execute(AbstractChatModel, AbstractContext)::AbstractContext
 
-Takes a `AbstractLangModel` and either a `AbstractPrompt` or `Vector{AbstractMessage}` 
-and returns a `Tuple{AbstractMessage, AbstractModelOutput}`.
+Takes a `AbstractLangModel` and an `AbstractContext`
+and modifies the `AbstractContext` with the results of calling the model.
 Implimentation for concrete model types will make HTTP calls
 to the model's API. 
 """
-function use end
+function execute end
 
