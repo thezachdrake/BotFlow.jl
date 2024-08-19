@@ -8,6 +8,13 @@ include("anthropic.jl")
 
 import Base: @kwdef
  
-export AnthropicChat, HumanMessage, AIMessage, ProcessMessage, AbstractMessage, invoke
+export 
+    AnthropicChat, 
+    HumanMessage, 
+    AIMessage, 
+    ProcessMessage, 
+    AbstractMessage,
+    SequentialContext, 
+    execute
 
 end

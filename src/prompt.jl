@@ -1,20 +1,14 @@
 abstract type AbstractPrompt end
-abstract type AbstractPromptTemplate end
 
-@kwdef struct SystemPromptTemplate <: AbstractPromptTemplate
+@kwdef struct SystemPromptTemplate <: AbstractPrompt
     template::String
-end
-
-@kwdef mutable struct SystemPrompt <: AbstractPrompt
-    template::String
-    args::Vector{Pair}
 end
 
 macro prompt(template::String)
     return SystemPromptTemplate(template=template)
 end
 
-function execute(template::AbstractPromptTemplate; kwargs...)
+function execute(template::AbstractPrompt; kwargs...)
     args = [kwargs...]
     raw_prompt = template.template
     for arg in args
@@ -23,7 +17,3 @@ function execute(template::AbstractPromptTemplate; kwargs...)
 
     return SystemPrompt(raw_prompt, args)
 end
-
-test = @prompt "this is a test prompt that should be compiled {{a}}"
-
-use(test, a=1)

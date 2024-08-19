@@ -3,8 +3,9 @@ import JSON3
 import Base: @kwdef
 
 include("llm.jl")
-include("tools.jl")
+include("tool.jl")
 include("message.jl")
+include("context.jl")
 
 @kwdef mutable struct AnthropicTool <: AbstractTool
     name::String
@@ -23,10 +24,6 @@ See https://docs.anthropic.com/en/api/messages for more information.
     model::String
     max_tokens::Int = 1024
     temperature::Float64 = 0.5
-    # stop_sequences::Vector{String} = []
-    # tools::Vector{AnthropicTool} = []
-    # top_k::Int = missing
-    # top_p::Float64 = missing
 end
 
 @kwdef struct AnthropicOutput <: AbstractModelOutput
@@ -65,7 +62,7 @@ function execute(
         "model" => model.model,
         "max_tokens" => model.max_tokens,
         "messages" => [
-            Dict("role" => anthropicRole(m), "content" => m.message) for m in messages
+            Dict("role" => anthropicRole(m), "content" => m.message) for m in ctx.messages
         ],
     )
 
@@ -80,7 +77,13 @@ function execute(
     response = JSON3.read(result.body)
     @debug response
 
-    aiMessage = AIMessage(message = response["content"][1]["text"])
+    content = response["content"]
+    for c in content
+        if c["type"] == "text"
+            push!(ctx.messages, AIMessage(message = c["text"]))
+        end
+    end
+
     anthropicOutput = AnthropicOutput(
         id = response["id"],
         stop_reason = get(response, "stop_reason", missing),
@@ -89,8 +92,10 @@ function execute(
         output_tokens = response["usage"]["output_tokens"],
     )
 
+    push!(ctx.results, anthropicOutput)
+
     @info "Recieved message from Anthropic: $(anthropicOutput.id)"
     @info "Message used $(anthropicOutput.input_tokens) input tokens and $(anthropicOutput.output_tokens) output tokens"
 
-    return aiMessage, anthropicOutput
+    return ctx
 end
