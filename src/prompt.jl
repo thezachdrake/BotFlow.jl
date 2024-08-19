@@ -14,7 +14,7 @@ macro prompt(template::String)
     return SystemPromptTemplate(template=template)
 end
 
-function use(template::AbstractPromptTemplate; kwargs...)
+function execute(template::AbstractPromptTemplate; kwargs...)
     args = [kwargs...]
     raw_prompt = template.template
     for arg in args
