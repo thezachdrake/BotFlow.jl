@@ -1,6 +1,6 @@
 include("../src/BotFlow.jl")
 using .BotFlow.BotFlowCore
-using .BotFlow.Anthropic
+using .BotFlow.BotFlowAnthropic
 using DotEnv
 DotEnv.load!()
 

@@ -1,4 +1,4 @@
-module Anthropic
+module BotFlowAnthropic
 
 using ..BotFlowCore
 using HTTP
