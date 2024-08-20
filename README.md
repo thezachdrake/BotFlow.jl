@@ -19,9 +19,10 @@ Pkg.add("BotFlow")
 ```
 
 Under the hood BotFlow consists of several modules. 
-- **BotFlowCore**: This module contains the base types and functions to create flows. These are LLM/platform independant.  
-- **BotFlowAnthropic**: This module contains concrete implimentations of certain abstract types to work with [Anthropic](https://docs.anthropic.com/en/docs/welcome). 
-- **BotFlowOpenAI**: This module contains concrete implimentations of certain abstract types to work with [OpenAI](https://platform.openai.com/docs/api-reference/introduction). 
+- `BotFlowCore`: This module contains the base types and functions to create flows. These are LLM/platform independant.  
+- `BotFlowAnthropic`: This module contains concrete implimentations of certain abstract types to work with [Anthropic](https://docs.anthropic.com/en/docs/welcome). 
+- `BotFlowOpenAI`: This module contains concrete implimentations of certain abstract types to work with [OpenAI](https://platform.openai.com/docs/api-reference/introduction).
+- `BotFlowHuggingFace`: This module contains concrete implimentations of certain abstract types to work with [HuggingFace](https://huggingface.co/docs/api-inference/detailed_parameters).
 
 Importing the library as a whole will export the modules individually:
 ```julia
@@ -45,6 +46,9 @@ using BotFlow.BotFlowAnthropic
 
 #import OpenAi
 using BotFlow.BotFlowOpenAI
+
+#import HuggingFace
+using BotFlow.BotFlowHuggingFace
 ```
 
 ## Core Components
