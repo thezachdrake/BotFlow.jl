@@ -1,19 +1,30 @@
-abstract type AbstractPrompt end
+"""
+    AbstractPromptTempalte
 
-@kwdef struct SystemPromptTemplate <: AbstractPrompt
+Base prompt type for interacting with LLMs.
+"""
+abstract type AbstractPromptTemplate end
+
+"""
+    SystemPromptTemplate
+"""
+struct SystemPromptTemplate <: AbstractPromptTemplate
     template::String
 end
 
 macro prompt(template::String)
-    return SystemPromptTemplate(template=template)
+    return SystemPromptTemplate(template)
 end
 
-function execute(template::AbstractPrompt; kwargs...)
-    args = [kwargs...]
+function execute(
+    template::AbstractPromptTemplate,
+    ctx::SequentialContext,
+)::SequentialContext
     raw_prompt = template.template
-    for arg in args
-        raw_prompt = replace(raw_prompt, "{{$(arg[1])}}" => arg[2])
+    for data in ctx.data
+        raw_prompt = replace(raw_prompt, "{{$(data[1])}}" => data[2])
     end
+    ctx.prompt = raw_prompt
 
-    return SystemPrompt(raw_prompt, args)
+    return ctx
 end

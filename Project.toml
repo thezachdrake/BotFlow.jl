@@ -8,6 +8,7 @@ DotEnv = "4dc1fcf4-5e3b-5448-94ab-0c38ec0385c1"
 Format = "1fa38f19-a742-5d3f-a2b9-30dd87b9d5f8"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
 Match = "7eb4fadd-790c-5f42-8a69-bfa0b872bfbf"
 
 [compat]

@@ -6,7 +6,7 @@ abstract type AbstractFlow end
 A DAG which executes prompts, models, and processes in sequence.
 """
 mutable struct SequentialFlow <: AbstractFlow
-    steps::Vector{Union{AbstractPrompt, AbstractModel, AbstractProcess}}
+    steps::Vector{Union{AbstractPrompt, AbstractLangModel, AbstractProcess}}
 end
 
 """
@@ -39,6 +39,6 @@ function execute(s::SequentialFlow, ctx::AbstractContext)::AbstractContext
     for step in s.steps
         ctx = execute(step, ctx)
     end
-    
+
     return ctx
 end
