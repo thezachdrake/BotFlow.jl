@@ -47,3 +47,20 @@ using BotFlow.BotFlowAnthropic
 using BotFlow.BotFlowOpenAI
 ```
 
+## Core Components
+
+BotFlow is built around *flows*. A `AbstractFlow` is essentially a DAG *(directed acyclic graph)* that takes in an `AbstractContext` and executes a squenece of `AbstractStep`. Each `AbstractStep` modifies the context in some way. The three main types of steps are:
+- `AbstractPromptTemplate`: Takes a string and injects data or parameters into it to form a prompt for an LLM.
+- `AbstractLangModel`: An interface to an LLM/FM that runs inference on the information in the context.
+- `AbstractProcess`: A user defined function that can perform operations on the context.
+
+These steps can be chained together into a flow using the `->` operator as such:
+
+```julia
+flow = AbstractPromptTemplate() -> AbstractLangModel() -> AbstractProcess()
+```
+*Flows* can be one of three types:
+- `SequentialFlow`: This flow executes steps one after the other in order.
+- `ConditionalFlow`: This flow executes steps in order, but with the ability to conditionaly inlcude or exclude steps as desired. 
+- `MultiPathFlow`: This flow runs steps (or other flows) in no defined order, with user created logic determining what runs next based on the context. *(this may or may not ending up being a DAG depending on structure)*
+
