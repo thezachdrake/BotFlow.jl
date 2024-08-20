@@ -1,4 +1,11 @@
-using BotFlow
+module Anthropic
+
+using ..BotFlowCore
+using HTTP
+using JSON3
+using Base: @kwdef
+
+export AnthropicChat, AnthropicTool, execute
 
 @kwdef mutable struct AnthropicTool <: AbstractTool
     name::String
@@ -22,7 +29,7 @@ end
 @kwdef struct AnthropicOutput <: AbstractModelOutput
     id::String
     stop_reason::String
-    stop_sequence::Union{Nothing, String}
+    stop_sequence::Union{Nothing,String}
     input_tokens::Int
     output_tokens::Int
 end
@@ -42,13 +49,13 @@ function execute(model::AnthropicChat, ctx::AbstractContext)
     url::String = "https://api.anthropic.com/v1/messages"
     @debug "Calling $url"
 
-    headers::Dict{String, String} = Dict(
+    headers::Dict{String,String} = Dict(
         "Content-Type" => "application/json",
         "x-api-key" => model.api_key,
         "anthropic-version" => "2023-06-01",
     )
 
-    body::Dict{String, Any} = Dict(
+    body::Dict{String,Any} = Dict(
         "model" => model.model,
         "max_tokens" => model.max_tokens,
         "messages" => [
@@ -88,4 +95,6 @@ function execute(model::AnthropicChat, ctx::AbstractContext)
     @info "Message used $(anthropicOutput.input_tokens) input tokens and $(anthropicOutput.output_tokens) output tokens"
 
     return ctx
+end
+
 end

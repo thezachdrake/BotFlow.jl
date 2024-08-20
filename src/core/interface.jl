@@ -1,3 +1,25 @@
+"""
+    AbstractContext
+
+Context object to carry the state of the flow between steps.
+"""
+
+abstract type AbstractContext end
+
+"""
+    AbstractPromptTempalte
+
+Base prompt type for interacting with LLMs.
+"""
+abstract type AbstractPromptTemplate end
+
+"""
+    AbstractFlow
+
+Base flow type for executing steps.
+"""
+abstract type AbstractFlow end
+
 
 """
     AbstractLangModel
@@ -48,3 +70,26 @@ Implimentation for concrete model types will make HTTP calls
 to the model's API.
 """
 function execute end
+
+"""
+    AbstractMessage
+
+Base message type for interacting with LLMs. Concrete implementations are implemented
+for `HumanMessage` and `AIMessage` depending on where the message originated 
+(i.e. input or output of an LLM).
+"""
+abstract type AbstractMessage end
+
+"""
+    AbstractProcess
+
+Base process type for running custom code as steps in a flow.
+"""
+abstract type AbstractProcess end
+
+"""
+    AbstractTool
+
+Base tool for passing paramtes to LLMs to be used in a flow.
+"""
+abstract type AbstractTool end

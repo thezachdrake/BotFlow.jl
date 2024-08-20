@@ -1,25 +1,8 @@
 module BotFlow
 
-include("message.jl")
-include("llm.jl")
-include("tool.jl")
-include("prompt.jl")
-include("process.jl")
-include("context.jl")
-include("flow.jl")  # for SequentialFlow
-include("interface.jl")
+export BotFlowCore, BotFlowAnthropic
 
-import Base: @kwdef
-import HTTP
-import JSON3
-
-export HumanMessage,
-    AIMessage,
-    ProcessMessage,
-    AbstractMessage,
-    SequentialContext,
-    execute,
-    SystemPromptTemplate
-AbstractLangModel, AbstractContext
+include("core/BotFlowCore.jl")
+include("integrations/Anthropic.jl")
 
 end

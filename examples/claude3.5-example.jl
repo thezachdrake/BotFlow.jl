@@ -1,9 +1,10 @@
 include("../src/BotFlow.jl")
-using .BotFlow
+using .BotFlow.BotFlowCore
+using .BotFlow.Anthropic
 using DotEnv
 DotEnv.load!()
 
-model = AnthropicChat(api_key = ENV["ANTHROPIC_KEY"], model = "claude-3-haiku-20240307")
+chatmodel = AnthropicChat(api_key = ENV["ANTHROPIC_KEY"], model = "claude-3-haiku-20240307")
 
 context =
     SequentialContext(messages = [HumanMessage(message = "What is the meaning of life?")])

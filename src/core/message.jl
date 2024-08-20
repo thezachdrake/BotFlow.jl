@@ -1,13 +1,4 @@
 """
-    AbstractMessage
-
-Base message type for interacting with LLMs. Concrete implementations are implemented
-for `HumanMessage` and `AIMessage` depending on where the message originated 
-(i.e. input or output of an LLM).
-"""
-abstract type AbstractMessage end
-
-"""
     HumanMessage
 
 Message type for human/user input into LLMs. This type inhernetly indicates that

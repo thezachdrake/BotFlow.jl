@@ -1,11 +1,4 @@
 """
-    AbstractPromptTempalte
-
-Base prompt type for interacting with LLMs.
-"""
-abstract type AbstractPromptTemplate end
-
-"""
     SystemPromptTemplate
 """
 struct SystemPromptTemplate <: AbstractPromptTemplate
@@ -16,10 +9,7 @@ macro prompt(template::String)
     return SystemPromptTemplate(template)
 end
 
-function execute(
-    template::AbstractPromptTemplate,
-    ctx::SequentialContext,
-)::SequentialContext
+function execute(template::AbstractPromptTemplate, ctx::AbstractContext)
     raw_prompt = template.template
     for data in ctx.data
         raw_prompt = replace(raw_prompt, "{{$(data[1])}}" => data[2])
